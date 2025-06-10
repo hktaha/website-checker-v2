@@ -48,7 +48,9 @@ let result = {
 
   // Store in Redis
   console.log('✅ Saving to Redis:', JSON.stringify(result));
+  console.log('🧪 MARKER A — before Redis write');
   await redis.lpush(`uptime:history:${domain}`, JSON.stringify(result));
+  console.log('🧪 MARKER B — after Redis write');
   await redis.ltrim(`uptime:history:${domain}`, 0, 49);
 
   res.json(result);
