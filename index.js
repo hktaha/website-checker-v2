@@ -48,8 +48,8 @@ let result = {
   }
 
   // Store in Redis
-  await redis.lpush(`uptime:${domain}`, JSON.stringify(result));
-  await redis.ltrim(`uptime:${domain}`, 0, 49); // keep only last 50
+  await redis.lpush(`uptime:history:${domain}`, JSON.stringify(result));
+  await redis.ltrim(`uptime:history:${domain}`, 0, 49);
 
   res.json(result);
 });
