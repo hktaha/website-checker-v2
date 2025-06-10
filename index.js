@@ -37,8 +37,6 @@ let result = {
   code: 0,
   timestamp: Date.now() // 👈 this is the fix
 };
-
-
   try {
     const response = await fetch(fullUrl, { method: 'GET', timeout: 5000 });
     result.code = response.status;
