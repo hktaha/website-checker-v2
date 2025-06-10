@@ -3,7 +3,7 @@
 import express from 'express';
 import fetch from 'node-fetch';
 import cors from 'cors';
-import { Redis } from '@upstash/redis';
+import { Redis } from '@upstash/redis/with-fetch';
 
 const app = express();
 app.use(express.json());
