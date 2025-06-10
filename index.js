@@ -44,6 +44,7 @@ let result = {
   } catch (err) {
     result.status = 'down';
   }
+ console.log('🧪 DEBUG LINE: This code is live');
 
   // Store in Redis
   console.log('✅ Saving to Redis:', JSON.stringify(result));
