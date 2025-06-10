@@ -31,12 +31,13 @@ app.post('/api/check', async (req, res) => {
   if (!fullUrl) return res.status(400).json({ error: 'Invalid URL' });
 
   const domain = new URL(fullUrl).hostname;
-  let result = {
-    url: fullUrl,
-    status: 'down',
-    code: 0,
-    lastChecked: new Date().toISOString()
-  };
+let result = {
+  url: fullUrl,
+  status: 'down',
+  code: 0,
+  timestamp: Date.now() // 👈 this is the fix
+};
+
 
   try {
     const response = await fetch(fullUrl, { method: 'GET', timeout: 5000 });
@@ -59,7 +60,16 @@ app.get('/api/history', async (req, res) => {
 
   try {
     const history = await redis.lrange(`uptime:${domain}`, 0, 49);
-    const parsed = history.map(JSON.parse);
+    const parsed = history.map((entry, i) => {
+    try {
+      return JSON.parse(entry);
+    } catch (err) {
+    console.error(`❌ Failed to parse Redis entry [${i}]:`, entry);
+  return null;
+  }
+}).filter(Boolean);
+
+
     res.json({ history: parsed });
   } catch {
     res.status(500).json({ error: 'Error fetching history' });
