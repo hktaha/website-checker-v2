@@ -48,6 +48,7 @@ let result = {
   }
 
   // Store in Redis
+  console.log('✅ Saving to Redis:', JSON.stringify(result));
   await redis.lpush(`uptime:history:${domain}`, JSON.stringify(result));
   await redis.ltrim(`uptime:history:${domain}`, 0, 49);
 
@@ -59,19 +60,20 @@ app.get('/api/history', async (req, res) => {
   if (!domain) return res.status(400).json({ error: 'Missing domain' });
 
   try {
-    const history = await redis.lrange(`uptime:${domain}`, 0, 49);
-    const parsed = history.map((entry, i) => {
+  const history = await redis.lrange(`uptime:history:${domain}`, 0, 49);
+  console.log('📥 Raw Redis values:', history);
+
+  const parsed = history.map((entry, i) => {
     try {
       return JSON.parse(entry);
     } catch (err) {
-    console.error(`❌ Failed to parse Redis entry [${i}]:`, entry);
-  return null;
-  }
-}).filter(Boolean);
+      console.error(`❌ Parse error at [${i}]:`, entry);
+      return null;
+    }
+  }).filter(Boolean);
 
-
-    res.json({ history: parsed });
-  } catch {
+  res.json({ history: parsed });
+} catch {
     res.status(500).json({ error: 'Error fetching history' });
   }
 });
